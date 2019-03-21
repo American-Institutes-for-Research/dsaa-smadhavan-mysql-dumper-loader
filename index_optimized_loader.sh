@@ -1,6 +1,6 @@
 #! /bin/bash
 set -e
-conf_file-"$1"
+conf_file="$1"
 
 complete_arguments="$@"
 getopts d: DIRNAME
