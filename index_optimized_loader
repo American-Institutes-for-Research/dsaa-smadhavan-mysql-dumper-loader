@@ -25,10 +25,10 @@ do
    shift
 done
 
-temp_dir="${data_dir}_temp"
+temp_dir="${data_dir}"_temp
+echo temp_dir: temp_dir
 mkdir -p "$temp_dir"
 
-echo $dbname
 echo "Moving step 1"
 mv "${data_dir}/"*.sql "${temp_dir}/"
 echo "Moved sql query files to temp dir"
@@ -43,15 +43,15 @@ myloader --defaults-file="$conf_file" $complete_arguments
 echo "Loaded base database schema"
 
 echo "Export index creation"
-mysql --defaults-file="$conf_file"  -NBe "set @db='${dbname}'; source index_generator.sql;" >"${temp_dir}/add_index.sql"
+mysql --defaults-file="$conf_file" -NBe "set @db='${dbname}'; source index_generator.sql;" >"${temp_dir}/add_index.sql"
 echo "Exported index creation query files"
 
 echo "Export index drop"
-mysql --defaults-file="$conf_file"  -NBe "use ${dbname}; source drop_generator.sql;" >"${temp_dir}/drop_index.sql"
+mysql --defaults-file="$conf_file" -NBe "set @db='${dbname}'; source drop_generator.sql;" >"${temp_dir}/drop_index.sql"
 echo "Exported drop index query files"
 
 echo "Run Drop"
-mysql --defaults-file="$conf_file"  -NBe "use ${dbname}; source ${temp_dir}/drop_index.sql"
+mysql --defaults-file="$conf_file" -NBe "use ${dbname}; source ${temp_dir}/drop_index.sql;"
 echo "Executed drop queties"
 
 echo "Moving step 3"
@@ -66,12 +66,11 @@ echo "Load Data"
 myloader --defaults-file="$conf_file"  $complete_arguments
 echo "Loaded data"
 
+echo "Load Index"
+mysql --defaults-file="$conf_file" -NBe "use ${dbname}; source ${data_dir}/add_index.sql;"
+echo "Loading index files"
+
 echo "Moving step 5"
 mv "${temp_dir}/"*.sql "${data_dir}/"
 echo "Moving queries back to data dir"
-
-echo "Load Index"
-mysql --defaults-file="$conf_file"  -NBe "use ${dbname}; source ${temp_dir}/add_index.sql;"
-echo "Loading index files"
-
 
