@@ -1,10 +1,11 @@
 #! /bin/bash
 echo Starting Scrip
 echo There were $# parameters supplied
-#set -e
+set -e
 conf_file=$1
 
 complete_arguments=$@
+echo complete_arguments $complete_arguments
 shift
 
 while [ -n "$1" ]
@@ -30,47 +31,47 @@ mkdir -p "$temp_dir"
 echo $dbname
 echo "Moving step 1"
 mv "${data_dir}/"*.sql "${temp_dir}/"
-echo "$?"
+echo "Moved sql query files to temp dir"
 
 echo "Moving step 2"
 mv "${temp_dir}/"*schema*.sql "${data_dir}/"
-echo "$?"
+echo "Moving sql query files back to data dir"
 
 echo "Load DB Struct"
 echo "$complete_arguments"
 myloader --defaults-file="$conf_file" $complete_arguments 
-echo "$?"
+echo "Loaded base database schema"
 
 echo "Export index creation"
 mysql --defaults-file="$conf_file"  -NBe "set @db='${dbname}'; source index_generator.sql;" >"${temp_dir}/add_index.sql"
-echo "$?"
+echo "Exported index creation query files"
 
 echo "Export index drop"
 mysql --defaults-file="$conf_file"  -NBe "use ${dbname}; source drop_generator.sql;" >"${temp_dir}/drop_index.sql"
-echo "$?"
+echo "Exported drop index query files"
 
 echo "Run Drop"
 mysql --defaults-file="$conf_file"  -NBe "use ${dbname}; source ${temp_dir}/drop_index.sql"
-echo "$?"
+echo "Executed drop queties"
 
 echo "Moving step 3"
 mv "${temp_dir}/"*.sql "${data_dir}/"
-echo "$?"
+echo "Moving sql queries back to data dir"
 
 echo "Moving step 4"
 mv "${data_dir}/"*schema*.sql "${temp_dir}/"
-echo "$?"
+echo "Moved schema query back to temp dir"
 
 echo "Load Data"
 myloader --defaults-file="$conf_file"  $complete_arguments
-echo "$?"
+echo "Loaded data"
 
 echo "Moving step 5"
 mv "${temp_dir}/"*.sql "${data_dir}/"
-echo "$?"
+echo "Moving queries back to data dir"
 
 echo "Load Index"
-mysql --defaults-file="mysql.conf"  -NBe "use ${dbname}; source ${temp_dir}/add_index.sql;"
-echo "$?"
+mysql --defaults-file="$conf_file"  -NBe "use ${dbname}; source ${temp_dir}/add_index.sql;"
+echo "Loading index files"
 
 
