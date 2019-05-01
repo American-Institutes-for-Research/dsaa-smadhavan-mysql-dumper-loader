@@ -1,1 +1,0 @@
-ALTER TABLE `TEST` DROP INDEX `strkey`, DROP INDEX `Composite`;
