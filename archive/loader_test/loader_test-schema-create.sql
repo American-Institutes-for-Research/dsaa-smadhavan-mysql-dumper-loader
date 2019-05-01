@@ -1,0 +1,1 @@
+CREATE DATABASE `loader_test` /*!40100 DEFAULT CHARACTER SET latin1 */;
