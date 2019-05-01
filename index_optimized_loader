@@ -12,19 +12,15 @@ while [ -n "$1" ]
 do
    echo "$1"
    case "$1" in
-     -d) echo Found the -d option with parameter value $2  
-         data_dir=$2
-         echo data_dir: $data_dir
+     -d) data_dir=$2
+         echo Found data_dir: $data_dir
          shift;;
-     -s) echo Found the -s option with paremeter value $2  
-         dbname=$2
+     -s) echo Found dbname=$2
          echo dbname: $dbname
          shift;;
-     -t) echo Found the -t option with parameter value $2
-         echo threads: $2
+     -t) echo Found threads: $2
          shift;;
-     -v) echo Found the -v option with parameter value $
-         echo verbose: $2
+     -v) echo Found verbose: $2
          shift;;
       *) echo $1 is not an option ;;
    esac
@@ -71,3 +67,4 @@ echo Cleaning up
 
 shopt -u extglob
 echo Done!!
+
