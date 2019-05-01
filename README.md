@@ -11,3 +11,17 @@ Wrapper around mydumper/myloader to optimize data loads
 7. Run myloader to load data
 8. Run create index statements generated from #4
 9. Move schema files back in for archival purpose
+
+## Execution
+Required parameters:
+Path to config file with database credentials
+`-d` Data directory path
+`-s` Name of the database to run on
+
+Optional parameters:
+`-t` Number of threads to use
+`-v` Verbosity level 
+
+Run Command
+`./index_optimized_loader {Path to config file with database credentials}  -d {Path to database schema and data files} -s {Name of the database} -v {Verbosity level: 1,2,3} -t {Number of threads to use}` 
+
