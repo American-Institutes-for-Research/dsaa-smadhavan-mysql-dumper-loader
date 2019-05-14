@@ -15,7 +15,7 @@ do
      -d) data_dir=$2
          echo Found data_dir: $data_dir
          shift;;
-     -s) echo Found dbname=$2
+     -s) dbname=$2
          echo dbname: $dbname
          shift;;
      -t) echo Found threads: $2
