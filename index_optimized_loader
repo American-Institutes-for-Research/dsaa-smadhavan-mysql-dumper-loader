@@ -32,6 +32,7 @@ echo temp_dir: temp_dir
 mkdir -p "$temp_dir"
 
 shopt -s extglob
+echo "${data_dir}/"!(*schema*.sql|metadata)
 mv "${data_dir}/"!(*schema*.sql|metadata) "${temp_dir}" 
 #mv "${data_dir}/"*.sql "${temp_dir}/"
 echo Moved sql data files to temp dir
@@ -39,10 +40,12 @@ echo Moved sql data files to temp dir
 myloader --defaults-file="$conf_file" $complete_arguments 
 echo Loaded base database schema
 
-mysql --defaults-file="$conf_file" -NBe "set @db='${dbname}'; source index_generator.sql;" >"${temp_dir}/add_index.sql"
+current_folder=`dirname $(readlink -f $0)`
+echo "$current_folder"
+mysql --defaults-file="$conf_file" -NBe "set @db='${dbname}'; source "$current_folder"/index_generator.sql;" >"${temp_dir}/add_index.sql"
 echo Exported index creation query files
 
-mysql --defaults-file="$conf_file" -NBe "set @db='${dbname}'; source drop_generator.sql;" >"${temp_dir}/drop_index.sql"
+mysql --defaults-file="$conf_file" -NBe "set @db='${dbname}'; source "$current_folder"/drop_generator.sql;" >"${temp_dir}/drop_index.sql"
 echo Exported drop index query files
 
 mysql --defaults-file="$conf_file" -NBe "use ${dbname}; source ${temp_dir}/drop_index.sql;"
